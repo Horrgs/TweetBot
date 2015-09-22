@@ -30,9 +30,63 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                 } else {
                     city = args[0];
                     state = args[1];
-                    weathertype = args[2];
+                    weathertype = args[2].toLowerCase();
+                    String[] allowedWeatherTypes = {"alert", "condition", "forecast"};
+                    boolean isGood = false;
+                    for(int x = 0; x < allowedWeatherTypes.length; x++) {
+                        if(allowedWeatherTypes[x].contains(weathertype.replace("s", ""))) {
+                            isGood = true;
+                        }
+                    }
+                    if(isGood) {
+                        site.openURL(site.getURL(null));
+                        try {
+
+                            switch(weathertype.replace("s", "")) {
+                                case "alert":
+                                    /**
+                                     * //TODO: maybe have this instead tweet hourly, as no one is going to tweet to during
+                                     * a storm to see what the weather alerts are.
+                                     */
+                                    statusUpdate = new StatusUpdate("WEATHER ALERT\n" +
+                                            "Description: " + getDescription() + "\n" +
+                                            "Began At: " + dateSet() +  "\n" +
+                                            "Expires At: " + dateExpires());
+                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                    break;
+                                case "condition":
+                                    statusUpdate = new StatusUpdate(
+                                            "Temp: " + getFTemp() + "F\n" +
+                                                    "Feels Like: " + getFeelsLike() + "F\n" +
+                                                    "Humidity: " + getHumidity() + "\n" +
+                                                    "Forecast: " + getForecast() + "\n" +
+                                                    "Precip: " + getPrecipitation() + " inches\n" +
+                                                    "Wind: " + getWind() + "MPH\n" +
+                                                    "Wind Gusts: " + getWindGusts() + "MPH");
+                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                    break;
+                                case "forecast":
+
+                                    statusUpdate = new StatusUpdate("[1/3]" +
+                                            "Temp: " + getAccuHighFahrenheit() + "F/" + getAccuLowFahrenheit() + "F\n" +
+                                            "Outlook: " + getAccuConditions() + "\n");
+                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                    //TODO: might need to make it sleep for 5s each tweet.
+                                    statusUpdate = new StatusUpdate("[2/3] " +
+                                            "Chance of Precipitation: " + getAccuPrecipPossibility() + "%\n" +
+                                            "Wind: " + getMaxWind() + "MPH max / " + getAvgWind() + "MPH avg\n");
+                                    //TODO: might need to make it sleep for 5s each tweet.
+                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                    statusUpdate = new StatusUpdate("[3/3] " +
+                                            "Humidity: " + getAvgHumidity() + "%");
+                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                    break;
+                            }
+                        } catch (JSONException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                     //example link: http://api.wunderground.com/api/790ff85a4325e40c/conditions/q/CA/San_Francisco.json
-                    site.openURL(site.getURL(null));
                 }
             } catch (TwitterException ex) {
                 ex.printStackTrace();
@@ -43,12 +97,12 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
 
     @Override
     public String getHelp() {
-        return null;
+        return "Returns the weather type for the specified city.";
     }
 
     @Override
     public String getPermission() {
-        return null;
+        return "tweetbot.user.weather";
     }
 
     /*
