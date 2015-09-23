@@ -41,7 +41,6 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                     if(isGood) {
                         site.openURL(site.getURL(null));
                         try {
-
                             switch(weathertype.replace("s", "")) {
                                 case "alert":
                                     /**
@@ -71,11 +70,11 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                                             "Temp: " + getAccuHighFahrenheit() + "F/" + getAccuLowFahrenheit() + "F\n" +
                                             "Outlook: " + getAccuConditions() + "\n");
                                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                                    //TODO: might need to make it sleep for 5s each tweet.
+                                    Thread.sleep(5000);
                                     statusUpdate = new StatusUpdate("[2/3] " +
                                             "Chance of Precipitation: " + getAccuPrecipPossibility() + "%\n" +
                                             "Wind: " + getMaxWind() + "MPH max / " + getAvgWind() + "MPH avg\n");
-                                    //TODO: might need to make it sleep for 5s each tweet.
+                                    Thread.sleep(5000);
                                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
                                     statusUpdate = new StatusUpdate("[3/3] " +
                                             "Humidity: " + getAvgHumidity() + "%");
@@ -83,6 +82,8 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                                     break;
                             }
                         } catch (JSONException ex) {
+                            ex.printStackTrace();
+                        } catch(InterruptedException ex) {
                             ex.printStackTrace();
                         }
                     }
