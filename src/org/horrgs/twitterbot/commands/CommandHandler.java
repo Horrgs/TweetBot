@@ -9,6 +9,7 @@ public class CommandHandler {
     public HashMap<String, SubCommand> commands = new HashMap<>();
 
     public void loadCommands() {
+        commands.put("binary", new Binary());
         commands.put("flipcoin", new FlipCoin());
         commands.put("help", new Help());
         commands.put("news", new News());
