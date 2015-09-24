@@ -12,7 +12,7 @@ public class FileManager {
     private static FileManager instance = new FileManager();
     public static FileManager getInstance() { return instance; }
     String username1, password1, oAuthConsumerKey1, oAuthConsumerSecret1,
-            oAuthAccessToken1, oAuthAccessTokenSecret1, weatherApiKey1;
+            oAuthAccessToken1, oAuthAccessTokenSecret1, weatherApiKey1, pasteBinKey1;
     private File keys;
     private BufferedWriter keysWriter;
 
@@ -42,7 +42,7 @@ public class FileManager {
                 keysWriter = new BufferedWriter(new FileWriter(keys));
                 keysReader = new BufferedReader(new FileReader(keys));
 
-                FileLayout fileLayout = new FileLayout("", "", "", "", "", "", "");
+                FileLayout fileLayout = new FileLayout("", "", "", "", "", "", "", "");
                 Gson gson = new Gson();
                 String json = gson.toJson(fileLayout);
                 keysWriter.write(json);
@@ -96,10 +96,14 @@ public class FileManager {
         return oAuthAccessTokenSecret1;
     }
 
+    public String getPasteBinKey() {
+        return pasteBinKey1;
+    }
+
     private class FileLayout {
 
         public FileLayout(String username, String password, String oAuthConsumerKey,
-                          String oAuthConsumerSecret, String oAuthAccessToken, String oAuthAccessTokenSecret, String weatherApiKey) {
+                          String oAuthConsumerSecret, String oAuthAccessToken, String oAuthAccessTokenSecret, String weatherApiKey, String pasteBinKey) {
             username1 = username;
             password1 = password;
             oAuthConsumerKey1 = oAuthConsumerKey;
@@ -107,6 +111,7 @@ public class FileManager {
             oAuthAccessToken1 = oAuthAccessToken;
             oAuthAccessTokenSecret1 = oAuthAccessTokenSecret;
             weatherApiKey1 = weatherApiKey;
+            pasteBinKey1 = pasteBinKey;
         }
 
         public void setUsername(String username) {
