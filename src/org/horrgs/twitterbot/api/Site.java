@@ -1,5 +1,6 @@
 package org.horrgs.twitterbot.api;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,6 +26,7 @@ public class Site {
     }
 
     public URLConnection openURL(String url) {
+        //This may be messed up.
         System.out.println("An attempt is being made to make a connection to: " + url);
         try {
             this.url = url;
@@ -49,7 +51,7 @@ public class Site {
     }
 
     private JSONObject jsonObject = null;
-
+    private JSONArray jsonArray = null;
 
     /**
      * @param args An optional argument, but when used "val" is required. An example would be when you make
@@ -57,12 +59,22 @@ public class Site {
      * @param val  Required when args is used, this would be the value following "?q=" so if you googled for
      *             "define Potus", it'd be "?q=define20%potus".
      */
-    public void startJson(String args, String val) {
+
+    public void startJson(boolean array, String args, String val) {
+        //This may be messed up.
         try {
-            if (args != null && val != null) {
-                this.jsonObject = new JSONObject(getResponse(openURL(getURL(args.replace(" ", "%20") + val.replace(" ", "%20")))));
+            if(!array) {
+                if (args != null && val != null) {
+                    this.jsonObject = new JSONObject(getResponse(openURL(getURL(args.replace(" ", "%20") + val.replace(" ", "%20")))));
+                } else {
+                    this.jsonObject = new JSONObject(getResponse(openURL(getURL(null))));
+                }
             } else {
-                this.jsonObject = new JSONObject(getResponse(openURL(getURL(null))));
+                if(args != null && val != null) {
+                    this.jsonArray = new JSONArray(getResponse(openURL(getURL(args.replace(" ", "%20") + val.replace(" ", "%20")))));
+                } else {
+                    this.jsonArray = new JSONArray(getResponse(openURL(getURL(null))));
+                }
             }
         } catch (JSONException ex) {
             ex.printStackTrace();
@@ -80,6 +92,10 @@ public class Site {
 
     public JSONObject getJsonObject() {
         return jsonObject;
+    }
+
+    public JSONArray getJsonArray() {
+        return jsonArray;
     }
 
     private String getResponse(URLConnection urlConnection) {
