@@ -1,9 +1,13 @@
 package org.horrgs.twitterbot.api;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.json.JSONArray;
 
 import java.io.*;
+import java.util.Date;
 
 /**
  * Created by horrgs on 9/17/15.
@@ -34,6 +38,7 @@ public class FileManager {
         this.keysReader = keysReader;
     }
 
+    private JsonArray miscArray;
     public void createFiles() {
         keys = new File("keys.json");
         if(!keys.exists()) {
@@ -42,10 +47,20 @@ public class FileManager {
                 keysWriter = new BufferedWriter(new FileWriter(keys));
                 keysReader = new BufferedReader(new FileReader(keys));
 
-                FileLayout fileLayout = new FileLayout("", "", "", "", "", "", "", "");
+                KeysLayout keysLayout = new KeysLayout("", "", "", "", "", "", "", "");
                 Gson gson = new Gson();
-                String json = gson.toJson(fileLayout);
-                keysWriter.write(json);
+                JsonObject jsonObject = new JsonObject();
+                JsonArray jsonArray = new JsonArray();
+                jsonObject.add("keys", jsonArray);
+                jsonArray.add(gson.toJsonTree(keysLayout));
+                miscArray = new JsonArray();
+                JsonObject jsonObject1 = new JsonObject();
+                jsonObject1.addProperty("wordOfTheDay", "");
+                Date d = new Date();
+                String s = String.format("%s/%s/%s", d.getMonth(), d.getDay(), d.getYear());
+                jsonObject1.addProperty("lastTimeAssigned", s);
+                jsonObject.add("misc", miscArray);
+                keysWriter.write(jsonObject.toString());
                 keysWriter.flush();
                 keysWriter.close();
             } catch (IOException ex) {
@@ -100,9 +115,9 @@ public class FileManager {
         return pasteBinKey1;
     }
 
-    private class FileLayout {
+    private class KeysLayout {
 
-        public FileLayout(String username, String password, String oAuthConsumerKey,
+        public KeysLayout(String username, String password, String oAuthConsumerKey,
                           String oAuthConsumerSecret, String oAuthAccessToken, String oAuthAccessTokenSecret, String weatherApiKey, String pasteBinKey) {
             username1 = username;
             password1 = password;
