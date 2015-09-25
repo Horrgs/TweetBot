@@ -8,6 +8,7 @@ import org.json.JSONException;
  * Created by horrg on 9/23/2015.
  */
 public class Words {
+    private String wordOfTheDay;
 
     public String[] getRandomWords(int wordsWanted) {
         String[] string = new String[wordsWanted + 3];
@@ -24,5 +25,38 @@ public class Words {
             }
         }
         return string;
+    }
+
+    public String getWordOfTheDay() {
+        return wordOfTheDay;
+    }
+
+    public void setWordOfTheDay(String wordOfTheDay) {
+        this.wordOfTheDay = wordOfTheDay;
+    }
+
+    public String defineWord(String word) {
+        String[] k = {"all", ""};
+        try {
+            //TODO: get just the definition from it.
+
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public String[] defineWord(String word, int limit, boolean includeRelated, String[] sourceDictionaries, boolean useCanonical) {
+        try {
+            //TODO: sourceDictionaries.
+            Site site = new Site("http://api.wordnik.com:80/v4/word.json/" + word
+                    + "/definitions?limit=" + limit + "&includeRelated=" + includeRelated + "&sourceDictionaries=all&useCanonical=" +
+                    useCanonical + "&includeTags=false&api_key=" + "a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5");
+            site.startJson(true, null, null);
+            return site.get(site.getJsonArray().getJSONObject(0), "text");
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }
