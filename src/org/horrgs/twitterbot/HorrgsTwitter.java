@@ -38,11 +38,10 @@ import java.io.FileReader;
  * Created by horrgs on 9/17/15.
  */
 public class HorrgsTwitter implements Runnable {
-    static FileManager fileManager;
     public static Twitter twitter;
 
     public static void main(String[] args) {
-        fileManager = new FileManager();
+        FileManager.getInstance().createFiles();
     }
 
     @Override

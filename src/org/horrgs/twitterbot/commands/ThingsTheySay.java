@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public class ThingsTheySay implements SubCommand {
     @Override
-    public boolean onCommand(Status status, String[] args) {
+    public void onCommand(Status status, String[] args) {
         try {
             if(status.getUser().getScreenName().equals("Horrgs")) {
                 StatusUpdate statusUpdate = new StatusUpdate("");
@@ -32,7 +32,6 @@ public class ThingsTheySay implements SubCommand {
         } catch (TwitterException ex) {
             ex.printStackTrace();
         }
-        return false;
     }
 
     @Override

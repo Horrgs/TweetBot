@@ -11,7 +11,7 @@ import twitter4j.TwitterException;
  */
 public class Define implements SubCommand {
     @Override
-    public boolean onCommand(Status status, String[] args) {
+    public void onCommand(Status status, String[] args) {
         if(status.getUser().getScreenName().equals("Horrgs")) {
             try {
                 StatusUpdate statusUpdate = new StatusUpdate("");
@@ -40,16 +40,15 @@ public class Define implements SubCommand {
 
             }
         }
-        return false;
     }
 
     @Override
     public String getHelp() {
-        return null;
+        return "Define a word specified.";
     }
 
     @Override
     public String getPermission() {
-        return null;
+        return "tweetbot.user.define";
     }
 }

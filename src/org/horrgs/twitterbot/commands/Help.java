@@ -11,7 +11,7 @@ import twitter4j.User;
  */
 public class Help implements SubCommand {
     @Override
-    public boolean onCommand(Status status, String[] args) {
+    public void onCommand(Status status, String[] args) {
         if(status.getUser().getScreenName().equals("Horrgs")) {
             long r1 = status.getId();
             StatusUpdate statusUpdate = new StatusUpdate("https://testing.com/");
@@ -22,7 +22,6 @@ public class Help implements SubCommand {
                 ex.printStackTrace();
             }
         }
-        return false;
     }
 
     @Override

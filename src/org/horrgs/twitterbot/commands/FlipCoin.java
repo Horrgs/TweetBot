@@ -13,7 +13,7 @@ import java.util.Random;
 public class FlipCoin implements SubCommand {
 
     @Override
-    public boolean onCommand(Status status, String[] args) {
+    public void onCommand(Status status, String[] args) {
         if(status.getUser().getScreenName().equals("Horrgs")) {
             try {
                 long r1 = status.getId();
@@ -60,7 +60,6 @@ public class FlipCoin implements SubCommand {
                 ex.printStackTrace();
             }
         }
-        return false;
     }
 
     @Override

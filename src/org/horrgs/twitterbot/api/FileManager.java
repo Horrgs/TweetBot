@@ -53,13 +53,6 @@ public class FileManager {
                 JsonArray jsonArray = new JsonArray();
                 jsonObject.add("keys", jsonArray);
                 jsonArray.add(gson.toJsonTree(keysLayout));
-                miscArray = new JsonArray();
-                JsonObject jsonObject1 = new JsonObject();
-                jsonObject1.addProperty("wordOfTheDay", "");
-                Date d = new Date();
-                String s = String.format("%s/%s/%s", d.getMonth(), d.getDay(), d.getYear());
-                jsonObject1.addProperty("lastTimeAssigned", s);
-                jsonObject.add("misc", miscArray);
                 keysWriter.write(jsonObject.toString());
                 keysWriter.flush();
                 keysWriter.close();

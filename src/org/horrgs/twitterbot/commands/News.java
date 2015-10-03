@@ -19,7 +19,7 @@ import java.net.URL;
 public class News implements SubCommand, NewsJSON {
     Site site = new Site("https://ajax.googleapis.com/ajax/services/search/news?v=1.0&");
     @Override
-    public boolean onCommand(Status status, String[] args) {
+    public void onCommand(Status status, String[] args) {
         StatusUpdate statusUpdate = new StatusUpdate("");
         long r1 = status.getId();
         if(status.getUser().getScreenName().equals("Horrgs")) {
@@ -63,7 +63,6 @@ public class News implements SubCommand, NewsJSON {
                 ex.printStackTrace();
             }
         }
-        return false;
     }
 
     @Override
@@ -111,7 +110,7 @@ public class News implements SubCommand, NewsJSON {
         for(int x = 0; x < 4; x++) {
             try {
                 News news = new News();
-                site.startJson(args, val);
+                site.startJson(false, args, val);
                 setJSONObject(x, new JSONObject(site.getJsonObject().getJSONObject("responseData").getJSONArray("results").getJSONObject(x)));
                 newsJSON[x] = news;
             } catch (JSONException ex) {

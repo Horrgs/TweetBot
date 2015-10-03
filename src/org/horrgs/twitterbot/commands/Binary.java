@@ -16,7 +16,7 @@ import twitter4j.TwitterException;
 public class Binary implements SubCommand {
     //TODO: allow the command sender to send a pastie and have that be translated.
     @Override
-    public boolean onCommand(Status status, String[] args) {
+    public void onCommand(Status status, String[] args) {
         if(status.getUser().getScreenName().equals("Horrgs")) {
             try {
                 StatusUpdate statusUpdate = new StatusUpdate("");
@@ -62,7 +62,6 @@ public class Binary implements SubCommand {
                 ex.printStackTrace();
             }
         }
-        return false;
     }
 
     @Override

@@ -8,9 +8,10 @@ import twitter4j.User;
  */
 public interface SubCommand {
 
-    public boolean onCommand(Status status, String[] args);
+    public void onCommand(Status status, String[] args);
 
     public String getHelp();
 
     public String getPermission();
+
 }

@@ -18,7 +18,7 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
     Site site = new Site("http://api.wunderground.com/api/" + FileManager.getInstance().getWeatherApiKey() + "/" + weathertype
             + "/q/" + state + "/" + city.replace(" ", "%20") + ".json");
     @Override
-    public boolean onCommand(Status status, String[] args) {
+    public void onCommand(Status status, String[] args) {
         StatusUpdate statusUpdate = new StatusUpdate("");
         long r1 = status.getId();
         if(status.getUser().getScreenName().equals("Horrgs")) {
@@ -87,13 +87,11 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                             ex.printStackTrace();
                         }
                     }
-                    //example link: http://api.wunderground.com/api/790ff85a4325e40c/conditions/q/CA/San_Francisco.json
                 }
             } catch (TwitterException ex) {
                 ex.printStackTrace();
             }
         }
-        return false;
     }
 
     @Override
