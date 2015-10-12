@@ -20,6 +20,7 @@ public interface Word {
     public String getDefinition() throws JSONException;
 
     public interface WordOfTheDay {
+        public String getWordOTD() throws JSONException;
         public String getWDefinition() throws JSONException;
         public String getWSource() throws JSONException;
         public String getWPartOfSpeech() throws JSONException;

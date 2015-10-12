@@ -1,9 +1,13 @@
 package org.horrgs.twitterbot.util;
 
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import org.horrgs.twitterbot.api.Site;
 import org.horrgs.twitterbot.io.Word;
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by horrg on 9/23/2015.
@@ -80,6 +84,15 @@ public class Words implements Word, Word.WordOfTheDay {
         return wordOfTheDay;
     }
 
+    public WordOfTheDay getWordOfTheDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        return getWordOfTheDay(String.format("%s-%s-%s", year, month, day));
+    }
+
 
     @Override
     public String getSourceDictionary() throws JSONException {
@@ -109,6 +122,11 @@ public class Words implements Word, Word.WordOfTheDay {
     @Override
     public String getDefinition() throws JSONException {
         return site.get(site.getJsonArray().getJSONObject(0), "text");
+    }
+
+    @Override
+    public String getWordOTD() throws JSONException {
+        return site.get(site.getJsonObject(), "word");
     }
 
     @Override
