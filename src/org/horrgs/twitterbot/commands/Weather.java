@@ -14,23 +14,25 @@ import twitter4j.TwitterException;
  */
 public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Conditions, WeatherJSON.Forecast {
     //TODO: add day support for forecast. There are 4 jObjects under forecastday array.
-    String city, state, weathertype;
-    Site site = new Site("http://api.wunderground.com/api/" + FileManager.getInstance().getWeatherApiKey() + "/" + weathertype
-            + "/q/" + state + "/" + city.replace(" ", "%20") + ".json");
+    String city = "New York City", state = "New York", weathertype = "conditions";
+    Site site = new Site("http://api.wunderground.com/api/" + FileManager.getInstance().getKey("weatherApiKey") + "/" + weathertype
+            + "/q/" + state.replace(" ", "%20") + "/" + city.replace(" ", "%20") + ".json");
     @Override
     public void onCommand(Status status, String[] args) {
         StatusUpdate statusUpdate = new StatusUpdate("");
         long r1 = status.getId();
         if(status.getUser().getScreenName().equals("Horrgs")) {
             try {
-                if(args.length != 3) {
-                    statusUpdate = new StatusUpdate("You gave an invalid argument.\n%weather <city> <state initials> <weathertype>");
+                if(args.length != 4) {
+                    statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + "You gave an invalid argument.\n%weather <city> <state initials> <weathertype>");
                     statusUpdate.setInReplyToStatusId(r1);
                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
                 } else {
-                    city = args[0];
-                    state = args[1];
-                    weathertype = args[2].toLowerCase();
+                    city = args[1];
+                    state = args[2];
+                    weathertype = args[3].toLowerCase();
+                    site = new Site("http://api.wunderground.com/api/" + FileManager.getInstance().getKey("weatherApiKey") + "/" + weathertype
+                            + "/q/" + state.replace(" ", "%20") + "/" + city.replace(" ", "%20") + ".json");
                     String[] allowedWeatherTypes = {"alert", "condition", "forecast"};
                     boolean isGood = false;
                     for(int x = 0; x < allowedWeatherTypes.length; x++) {
@@ -54,10 +56,9 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
                                     break;
                                 case "condition":
-                                    statusUpdate = new StatusUpdate(
+                                    statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n " +
                                             "Temp: " + getFTemp() + "F\n" +
                                                     "Feels Like: " + getFeelsLike() + "F\n" +
-                                                    "Humidity: " + getHumidity() + "\n" +
                                                     "Forecast: " + getForecast() + "\n" +
                                                     "Precip: " + getPrecipitation() + " inches\n" +
                                                     "Wind: " + getWind() + "MPH\n" +

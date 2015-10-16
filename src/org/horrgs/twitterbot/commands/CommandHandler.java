@@ -11,7 +11,14 @@ import java.util.HashMap;
  * Created by horrg on 9/19/2015.
  */
 public class CommandHandler implements SubCommand {
-    public HashMap<String, SubCommand> commands = new HashMap<>();
+    /*private static CommandHandler instance = new CommandHandler();
+    public static CommandHandler getInstance() { return instance; }*/
+    public HashMap<String, SubCommand> commands;
+
+    public CommandHandler() {
+        commands = new HashMap<>();
+        loadCommands();
+    }
 
     public void loadCommands() {
         commands.put("binary", new Binary());
@@ -29,16 +36,22 @@ public class CommandHandler implements SubCommand {
             if(status.getText().startsWith("%")) {
                 String[] strings = status.getText().split(" ");
                 args = strings;
+                String cmd = args[0].replace("%", "");
+                System.out.println(cmd);
                 try {
-                    if(!commands.containsKey(args[0].replace("%", ""))) {
-                        StatusUpdate statusUpdate = new StatusUpdate("Command \"" + args[0] + "\" doesn't exist.");
+                    if(!commands.containsKey(cmd)) {
+                        System.out.println("KK");
+                        StatusUpdate statusUpdate = new StatusUpdate("Command \"" + cmd + "\" doesn't exist.");
                         HorrgsTwitter.twitter.updateStatus(statusUpdate);
                         return;
-                    }
-                    try {
-                        commands.get(args[0].replace("%", "")).onCommand(status, args);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    } else {
+                        System.out.println("RR");
+                        try {
+                            commands.get(cmd).onCommand(status, args);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
                     }
                 } catch (TwitterException ex) {
                     ex.printStackTrace();

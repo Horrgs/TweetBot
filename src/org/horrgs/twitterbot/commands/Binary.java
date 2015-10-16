@@ -42,15 +42,15 @@ public class Binary implements SubCommand {
                                     statusUpdate.setInReplyToStatusId(r1);
                                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
                                 } else {
-                                    try {
-                                        String apiKey = FileManager.getInstance().getPasteBinKey();
+                                    /*try {
+                                        //String apiKey = FileManager.getInstance().getPasteBinKey();
                                         Words words = new Words();
                                         String[] x = words.getRandomWords(3);
                                         String title = x[0] + x[1] + x[2];
-                                        Pastebin.pastePaste(apiKey, f, title);
+                                        //Pastebin.pastePaste(apiKey, f, title);
                                     } catch (PasteException ex) {
                                         ex.printStackTrace();
-                                    }
+                                    }  */
                                 }
                                 break;
                             case "toBinary":

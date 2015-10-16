@@ -24,8 +24,12 @@ SOFTWARE.
 
 package org.horrgs.twitterbot;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.horrgs.twitterbot.api.FileManager;
+import org.horrgs.twitterbot.commands.CommandHandler;
+import org.horrgs.twitterbot.util.TweetListener;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
 import twitter4j.Twitter;
@@ -33,43 +37,47 @@ import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.FileReader;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by horrgs on 9/17/15.
  */
 public class HorrgsTwitter implements Runnable {
     public static Twitter twitter;
-
+    static FileManager fileManager = FileManager.getInstance();
     public static void main(String[] args) {
-        FileManager.getInstance().createFiles();
+        fileManager.createFiles();
+        new CommandHandler();
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        scheduledExecutorService.scheduleAtFixedRate(new TweetListener(), 5, 15, TimeUnit.SECONDS);
+        Thread thread = new Thread(new HorrgsTwitter());
+        thread.start();
     }
 
     @Override
     public void run() {
-        JSONObject jsonObject = null;
+        JsonObject jsonObject = null;
         JsonParser jsonParser = new JsonParser();
         try {
-            Object obj = jsonParser.parse(new FileReader("secrets.json"));
-            jsonObject = (JSONObject) obj;
+            Object obj = jsonParser.parse(new FileReader("keys.json"));
+            jsonObject = (JsonObject) obj;
             System.out.println("Parsing secrets.json ....");
         } catch (Exception ex) {
             ex.printStackTrace();
             return;
         }
+        Gson gson = new Gson();
+        FileManager.KeysLayout keysLayout = gson.fromJson(jsonObject, FileManager.KeysLayout.class);
 
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-        try {
-            configurationBuilder.setDebugEnabled(true)
-                    .setOAuthConsumerKey(jsonObject.get("OAuthConsumerKey").toString())
-                    .setOAuthConsumerSecret(jsonObject.get("OAuthConsumerSecret").toString())
-                    .setOAuthAccessToken(jsonObject.get("OAuthAccessToken").toString())
-                    .setOAuthAccessTokenSecret(jsonObject.get("OAuthAccessTokenSecret").toString());
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-        }
+        configurationBuilder.setDebugEnabled(true)
+                    .setOAuthConsumerKey(keysLayout.getoAuthConsumeyKey())
+                    .setOAuthConsumerSecret(keysLayout.getoAuthConsumerSecret())
+                    .setOAuthAccessToken(keysLayout.getoAuthAccessToken())
+                    .setOAuthAccessTokenSecret(keysLayout.getoAuthAccessTokenSecret());
         TwitterFactory tf = new TwitterFactory(configurationBuilder.build());
         twitter = tf.getInstance();
-
-
     }
 }

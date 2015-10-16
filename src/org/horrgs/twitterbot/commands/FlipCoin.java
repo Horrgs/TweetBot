@@ -18,12 +18,14 @@ public class FlipCoin implements SubCommand {
             try {
                 long r1 = status.getId();
                 StatusUpdate statusUpdate = new StatusUpdate("");
-                if (args.length == 1) {
-                    if (args[0].equals("2/3") || args[0].equals("3/5")) {
+                System.out.println(args.length);
+                System.out.println(args[1]);
+                if (args.length == 2) {
+                    if (args[1].equals("2/3") || args[1].equals("3/5")) {
                         Random random = new Random(2);
-                        String flips[] = {};
-                        char cha = args[0].charAt(3);
-                        for (int x = 0; x < Integer.parseInt(String.valueOf(cha)); x++) {
+                        String flips[] = new String[args[1].length()];
+                        System.out.println(args[1].length());
+                        for (int x = 0; x < Integer.parseInt(String.valueOf(args[1].length())); x++) {
                             int i = random.nextInt();
                             flips[x] = i == 0 ? "Heads" : "Tails";
                         }
@@ -35,11 +37,11 @@ public class FlipCoin implements SubCommand {
                                 string = flips[x];
                             }
                         }
-                        statusUpdate = new StatusUpdate("Coin Flipped!\nResults: " + string);
+                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + "Coin Flipped!\nResults: " + string);
                         statusUpdate.setInReplyToStatusId(r1);
                         HorrgsTwitter.twitter.updateStatus(statusUpdate);
                     } else {
-                        statusUpdate = new StatusUpdate("You gave an invalid argument.\n%flipcoin [arg1]\n[arg1] is optional" +
+                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + "You gave an invalid argument.\n%flipcoin [arg1]\n[arg1] is optional" +
                                 "but must be 2/3 or 3/5");
                         statusUpdate.setInReplyToStatusId(r1);
                         HorrgsTwitter.twitter.updateStatus(statusUpdate);
@@ -47,11 +49,11 @@ public class FlipCoin implements SubCommand {
                 } else {
                     Random r = new Random(2);
                     if(r.nextInt() == 0) {
-                        statusUpdate = new StatusUpdate("Coin Flipped!\nResults: Heads");
+                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + "Coin Flipped!\nResults: Heads");
                         statusUpdate.setInReplyToStatusId(r1);
                         HorrgsTwitter.twitter.updateStatus(statusUpdate);
                     } else {
-                        statusUpdate = new StatusUpdate("Coin Flipped!\nResults: Tails");
+                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + "Coin Flipped!\nResults: Tails");
                         statusUpdate.setInReplyToStatusId(r1);
                         HorrgsTwitter.twitter.updateStatus(statusUpdate);
                     }

@@ -1,10 +1,9 @@
 package org.horrgs.twitterbot.api;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.util.Date;
@@ -15,12 +14,9 @@ import java.util.Date;
 public class FileManager {
     private static FileManager instance = new FileManager();
     public static FileManager getInstance() { return instance; }
-    String username1, password1, oAuthConsumerKey1, oAuthConsumerSecret1,
-            oAuthAccessToken1, oAuthAccessTokenSecret1, weatherApiKey1, pasteBinKey1;
     private File keys;
-    private BufferedWriter keysWriter;
-
     private BufferedReader keysReader;
+    private BufferedWriter keysWriter;
 
     public BufferedWriter getKeysWriter() {
         return keysWriter;
@@ -39,115 +35,114 @@ public class FileManager {
     }
 
     private JsonArray miscArray;
+
     public void createFiles() {
         keys = new File("keys.json");
-        if(!keys.exists()) {
+        System.out.println("#1");
+        if (!keys.exists()) {
+            System.out.println("#2");
             try {
+                System.out.println("#3");
                 keys.createNewFile();
                 keysWriter = new BufferedWriter(new FileWriter(keys));
                 keysReader = new BufferedReader(new FileReader(keys));
-
-                KeysLayout keysLayout = new KeysLayout("", "", "", "", "", "", "", "");
+                KeysLayout keysLayout = new KeysLayout("", "", "", "", "", "");
                 Gson gson = new Gson();
-                JsonObject jsonObject = new JsonObject();
-                JsonArray jsonArray = new JsonArray();
-                jsonObject.add("keys", jsonArray);
-                jsonArray.add(gson.toJsonTree(keysLayout));
+                JSONObject jsonObject = new JSONObject(gson.toJson(keysLayout));
                 keysWriter.write(jsonObject.toString());
                 keysWriter.flush();
                 keysWriter.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
-            }
-        }
-    }
-
-    public FileManager() {
-        keys = new File("keys.json");
-        if(keys.exists()) {
-            try {
-                keysWriter = new BufferedWriter(new FileWriter(keys));
-                keysReader = new BufferedReader(new FileReader(keys));
-            } catch (IOException ex) {
+            } catch (JSONException ex) {
                 ex.printStackTrace();
             }
         } else {
-            createFiles();
+            System.out.println("#3000");
+            Gson gson = new Gson();
+            JsonObject jsonObject = null;
+            JsonParser jsonParser = new JsonParser();
+            try {
+                Object obj = jsonParser.parse(new FileReader("keys.json"));
+                jsonObject = (JsonObject) obj;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            KeysLayout keysLayout = gson.fromJson(jsonObject, KeysLayout.class);
+            System.out.println(keysLayout.getoAuthAccessToken());
         }
     }
 
-    public String getWeatherApiKey() {
-        return weatherApiKey1;
+        public String getKey(String key) {
+        Gson gson = new Gson();
+        JsonObject jsonObject = null;
+        JsonParser jsonParser = new JsonParser();
+        try {
+            Object obj = jsonParser.parse(new FileReader("keys.json"));
+            jsonObject = (JsonObject) obj;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return jsonObject.get(key).getAsString();
     }
 
-    public String getUsername() {
-        return username1;
-    }
+    public class KeysLayout {
 
-    public String getPassword() {
-        return password1;
-    }
 
-    public String getoAuthConsumeyKey() {
-        return oAuthConsumerKey1;
-    }
-
-    public String getoAuthConsumerSecret() {
-        return oAuthConsumerSecret1;
-    }
-
-    public String getoAuthAccessToken() {
-        return oAuthAccessToken1;
-    }
-
-    public String getoAuthAccessTokenSecret() {
-        return oAuthAccessTokenSecret1;
-    }
-
-    public String getPasteBinKey() {
-        return pasteBinKey1;
-    }
-
-    private class KeysLayout {
-
-        public KeysLayout(String username, String password, String oAuthConsumerKey,
+        String oAuthConsumerKey, oAuthConsumerSecret,
+                oAuthAccessToken, oAuthAccessTokenSecret, weatherApiKey, pasteBinKey;
+        public KeysLayout(String oAuthConsumerKey,
                           String oAuthConsumerSecret, String oAuthAccessToken, String oAuthAccessTokenSecret, String weatherApiKey, String pasteBinKey) {
-            username1 = username;
-            password1 = password;
-            oAuthConsumerKey1 = oAuthConsumerKey;
-            oAuthConsumerSecret1 = oAuthConsumerSecret;
-            oAuthAccessToken1 = oAuthAccessToken;
-            oAuthAccessTokenSecret1 = oAuthAccessTokenSecret;
-            weatherApiKey1 = weatherApiKey;
-            pasteBinKey1 = pasteBinKey;
+            oAuthConsumerKey = oAuthConsumerKey;
+            oAuthConsumerSecret = oAuthConsumerSecret;
+            oAuthAccessToken = oAuthAccessToken;
+            oAuthAccessTokenSecret = oAuthAccessTokenSecret;
+            weatherApiKey = weatherApiKey;
+            pasteBinKey = pasteBinKey;
         }
 
-        public void setUsername(String username) {
-            username1 = username;
+        public String getWeatherApiKey() {
+            return weatherApiKey;
         }
 
-        public void setPassword(String password) {
-            password1 = password;
+        public String getoAuthConsumeyKey() {
+            return oAuthConsumerKey;
+        }
+
+        public String getoAuthConsumerSecret() {
+            return oAuthConsumerSecret;
+        }
+
+        public String getoAuthAccessToken() {
+            return oAuthAccessToken;
+        }
+
+        public String getoAuthAccessTokenSecret() {
+            return oAuthAccessTokenSecret;
+        }
+
+        public String getPasteBinKey() {
+            return pasteBinKey;
         }
 
         public void setoAuthConsumeyKey(String oAuthConsumeyKey) {
-            oAuthConsumerKey1 = oAuthConsumeyKey;
+            oAuthConsumerKey = oAuthConsumeyKey;
         }
 
         public void setoAuthConsumerSecret(String oAuthConsumerSecret) {
-            oAuthConsumerSecret1 = oAuthConsumerSecret;
+            oAuthConsumerSecret = oAuthConsumerSecret;
         }
 
         public void setoAuthAccessToken(String oAuthAccessToken) {
-            oAuthAccessToken1 = oAuthAccessToken;
+            oAuthAccessToken = oAuthAccessToken;
         }
 
         public void setoAuthAccessTokenSecret(String oAuthAccessTokenSecret) {
-            oAuthAccessTokenSecret1 = oAuthAccessTokenSecret;
+            oAuthAccessTokenSecret = oAuthAccessTokenSecret;
         }
 
         public void setWeatherApiKey(String weatherApiKey) {
-            weatherApiKey1 = weatherApiKey;
+            weatherApiKey = weatherApiKey;
         }
     }
 
