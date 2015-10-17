@@ -1,6 +1,7 @@
 package org.horrgs.twitterbot.commands;
 
 import org.horrgs.twitterbot.HorrgsTwitter;
+import org.horrgs.twitterbot.util.TweetTools;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -40,14 +41,15 @@ public class CommandHandler implements SubCommand {
                 System.out.println(cmd);
                 try {
                     if(!commands.containsKey(cmd)) {
-                        System.out.println("KK");
                         StatusUpdate statusUpdate = new StatusUpdate("Command \"" + cmd + "\" doesn't exist.");
                         HorrgsTwitter.twitter.updateStatus(statusUpdate);
                         return;
                     } else {
-                        System.out.println("RR");
                         try {
-                            commands.get(cmd).onCommand(status, args);
+                            SubCommand subCommand = commands.get(cmd);
+                            if(TweetTools.hasPermission(status.getUser().getId(), subCommand.getPermission())) {
+                                subCommand.onCommand(status, args);
+                            }
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
