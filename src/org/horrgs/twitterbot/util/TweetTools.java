@@ -1,41 +1,70 @@
 package org.horrgs.twitterbot.util;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.json.JSONObject;
+
+import java.io.FileReader;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Horrgs on 10/12/2015.
  */
 public class TweetTools {
 
-
-    public String[] splitTweet(String status) {
-        String[] tweets = new String[Integer.valueOf(status.length() / 130)];
+    public static String[] splitTweet(String status) {
+        String[] tweets = new String[Integer.valueOf(status.length() / 130 + 1)];
         if (status.length() < 140) {
             tweets[0] = status;
             return tweets;
         } else {
             HashMap<Integer, Character> periodMap = new HashMap<>();
-            for(int a = 0; a < tweets.length; a++) {
-                for (int x = 130; x != 0; x--) {
-                    if (status.charAt(x) == '.' || status.charAt(x) == '?' || status.charAt(x) == ',') {
-                        periodMap.put(x, status.charAt(x));
+            for(int x = 0; x < status.length(); x++) {
+                if(status.charAt(x) == '.' || status.charAt(x) == ',' || status.charAt(x) == '?' || status.charAt(x) == '!' || status.charAt(x) == '\n') {
+                    periodMap.put(x, status.charAt(x));
+                }
+            }
+            int highestPeriods[] = new int[tweets.length];
+            ArrayList<Integer> ss = new ArrayList<>();
+            for(int x = 0; x < tweets.length; x++) {
+                int starting = x == 0 ? 0 : x * 130;
+                for(int a = starting; a < starting + 130; a++) {
+                    if(periodMap.containsKey(a)) {
+                        ss.add(a);
                     }
                 }
-                boolean s = a * 130 < a * 130 + 130;
-                for(int x = a * 130; x < a * 130 + 130; x++) {
-                    s = periodMap.containsKey(x);
+                Collections.sort(ss);
+                highestPeriods[x] = ss.get(ss.size() - 1);
+                ss.clear();
+                starting = x == 0 ? 0 : highestPeriods[x - 1] + 2;
+                int end = x == tweets.length + 1 ? tweets.length : highestPeriods[x];
+                for(int c = starting; c < end + 1; c++) {
+                    tweets[x] = tweets[x] + status.charAt(c);
                 }
-                if(s) {
-                    for(int c = 130 * a; c < 130 * a + 130; c++) {
-                        tweets[a] = tweets[a] + status.charAt(a);
-                    }
-                }
+                tweets[x] = tweets[x].replace("null", "");
             }
         }
         return tweets;
     }
 
-
+    public static boolean hasPermission(long longId, String permission) {
+        JsonObject jsonObject = null;
+        JsonParser jsonParser = new JsonParser();
+        try {
+            Object obj = jsonParser.parse(new FileReader("keys.json"));
+            jsonObject = (JsonObject) obj;
+            System.out.println("Parsing secrets.json ....");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if(jsonObject != null && jsonObject.get(permission) != null) {
+            for(int x = 0; x < jsonObject.get(permission).getAsJsonArray().size(); x++) {
+                if(jsonObject.get(permission).getAsJsonArray().get(x).getAsLong() == longId) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
