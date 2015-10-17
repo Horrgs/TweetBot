@@ -115,10 +115,12 @@ public class Site {
 
     public <T> T get(JSONObject path, String value) {
         try {
-            if (path == null) {
+            if (path == null && jsonObject != null) {
                 return (T) jsonObject.get(value);
             } else {
-                return (T) path.get(value);
+                if(path != null) {
+                    return (T) path.get(value);
+                }
             }
         } catch (JSONException ex) {
             ex.printStackTrace();
