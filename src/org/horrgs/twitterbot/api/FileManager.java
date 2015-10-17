@@ -93,12 +93,12 @@ public class FileManager {
                 oAuthAccessToken, oAuthAccessTokenSecret, weatherApiKey, pasteBinKey;
         public KeysLayout(String oAuthConsumerKey,
                           String oAuthConsumerSecret, String oAuthAccessToken, String oAuthAccessTokenSecret, String weatherApiKey, String pasteBinKey) {
-            oAuthConsumerKey = oAuthConsumerKey;
-            oAuthConsumerSecret = oAuthConsumerSecret;
-            oAuthAccessToken = oAuthAccessToken;
-            oAuthAccessTokenSecret = oAuthAccessTokenSecret;
-            weatherApiKey = weatherApiKey;
-            pasteBinKey = pasteBinKey;
+            this.oAuthConsumerKey = oAuthConsumerKey;
+            this.oAuthConsumerSecret = oAuthConsumerSecret;
+            this.oAuthAccessToken = oAuthAccessToken;
+            this.oAuthAccessTokenSecret = oAuthAccessTokenSecret;
+            this.weatherApiKey = weatherApiKey;
+            this.pasteBinKey = pasteBinKey;
         }
 
         public String getWeatherApiKey() {
@@ -123,26 +123,6 @@ public class FileManager {
 
         public String getPasteBinKey() {
             return pasteBinKey;
-        }
-
-        public void setoAuthConsumeyKey(String oAuthConsumeyKey) {
-            oAuthConsumerKey = oAuthConsumeyKey;
-        }
-
-        public void setoAuthConsumerSecret(String oAuthConsumerSecret) {
-            oAuthConsumerSecret = oAuthConsumerSecret;
-        }
-
-        public void setoAuthAccessToken(String oAuthAccessToken) {
-            oAuthAccessToken = oAuthAccessToken;
-        }
-
-        public void setoAuthAccessTokenSecret(String oAuthAccessTokenSecret) {
-            oAuthAccessTokenSecret = oAuthAccessTokenSecret;
-        }
-
-        public void setWeatherApiKey(String weatherApiKey) {
-            weatherApiKey = weatherApiKey;
         }
     }
 
