@@ -22,46 +22,54 @@ public class News implements SubCommand, NewsJSON {
     public void onCommand(Status status, String[] args) {
         StatusUpdate statusUpdate = new StatusUpdate("");
         long r1 = status.getId();
-        if(status.getUser().getScreenName().equals("Horrgs")) {
-            String[] topics = {"h", "w", "b", "n", "t", "el", "p", "e", "s", "m"};
-            try {
-                if(args.length == 0) {
-                    statusUpdate = new StatusUpdate("You gave no argument.\nAn argument is required.\n%news <topic> [site]");
-                    statusUpdate.setInReplyToStatusId(r1);
-                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                } else if(args.length == 1 && args[0].length() == 1) {
-                    boolean contains = false;
-                    char topic = args[0].toLowerCase().charAt(args[0].length());
-                    for(int x = 0; x < topics.length; x++) {
-                        if(topics[x].equals(String.valueOf(topic))) {
-                            contains = true;
-                        }
-                    }
-                    if(contains) {
-                        NewsJSON[] newsJSON = getArticles("topic=", String.valueOf(topic));
-                        for(int x = 0; x < newsJSON.length; x++) {
-                            try {
-                                Url url = Bitly.as("bitlyapidemo", "R_0da49e0a9118ff35f52f629d2d71bf07").call(Bitly.shorten(newsJSON[x].getStringURL(x)));
-                                statusUpdate = new StatusUpdate(newsJSON[x].getTitle(x)+url.getShortUrl());
-                                statusUpdate.setInReplyToStatusId(r1);
-                                HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                                Thread.sleep(3000);
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
-
-
-                        }
-                    } else {
-                        statusUpdate = new StatusUpdate("Error in executing \"news\" command.\nYou gave an invalid topic.");
-                        statusUpdate.setInReplyToStatusId(r1);
-                        HorrgsTwitter.twitter.updateStatus(statusUpdate);
+        System.out.println(args.length);
+        String[] topics = {"h", "w", "b", "n", "t", "el", "p", "e", "s", "m"};
+        try {
+            if (args.length == 1) {
+                System.out.println("1");
+                statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + "@" + status.getUser().getScreenName() + " " + "You gave no argument.\nAn argument is required.\n%news <topic> [site]");
+                statusUpdate.setInReplyToStatusId(r1);
+                HorrgsTwitter.twitter.updateStatus(statusUpdate);
+            } else if (args.length == 2 && args[1].length() <= 2) {
+                System.out.println("2");
+                boolean contains = false;
+                char topic = args[1].toLowerCase().charAt(0);
+                for (int x = 0; x < topics.length; x++) {
+                    System.out.println("3");
+                    if (topics[x].equals(String.valueOf(topic))) {
+                        contains = true;
+                        System.out.println("4");
+                        break;
                     }
                 }
+                NewsJSON[] newsJSON = getArticles("topic=", String.valueOf(topic));
+                if (contains) {
+                    System.out.println("5");
+                    for (int x = 0; x < newsJSON.length; x++) {
+                        System.out.println("6");
+                        try {
+                            System.out.println(newsJSON[x].getStringURL(x));
+                            Url url = Bitly.as("bitlyapidemo", "R_0da49e0a9118ff35f52f629d2d71bf07").call(Bitly.shorten(newsJSON[x].getStringURL(x)));
+                            statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + newsJSON[x].getTitle(x) + url.getShortUrl());
+                            statusUpdate.setInReplyToStatusId(r1);
+                            HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                            Thread.sleep(3000);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
 
-            } catch (TwitterException ex) {
-                ex.printStackTrace();
+
+                    }
+                } else {
+                    System.out.println("7");
+                    statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + "Error in executing \"news\" command.\nYou gave an invalid topic.");
+                    statusUpdate.setInReplyToStatusId(r1);
+                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                }
             }
+
+        } catch (TwitterException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -82,6 +90,7 @@ public class News implements SubCommand, NewsJSON {
 
     @Override
     public String getStringURL(int x) {
+        System.out.println(site.get(getJSONObject(x), "unescapedUrl"));
         return site.get(getJSONObject(x), "unescapedUrl");
     }
 
@@ -107,10 +116,10 @@ public class News implements SubCommand, NewsJSON {
 
     public NewsJSON[] getArticles(String args, String val) {
         NewsJSON[] newsJSON = new NewsJSON[4];
+        site.startJson(false, args, val);
         for(int x = 0; x < 4; x++) {
             try {
                 News news = new News();
-                site.startJson(false, args, val);
                 setJSONObject(x, new JSONObject(site.getJsonObject().getJSONObject("responseData").getJSONArray("results").getJSONObject(x)));
                 newsJSON[x] = news;
             } catch (JSONException ex) {

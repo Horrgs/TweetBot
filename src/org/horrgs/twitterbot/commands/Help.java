@@ -12,15 +12,13 @@ import twitter4j.User;
 public class Help implements SubCommand {
     @Override
     public void onCommand(Status status, String[] args) {
-        if(status.getUser().getScreenName().equals("Horrgs")) {
-            long r1 = status.getId();
-            StatusUpdate statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " here are a list of commands: http://pastebin.com/5y1MtE6f");
-            statusUpdate.setInReplyToStatusId(r1);
-            try {
-                HorrgsTwitter.twitter.updateStatus(statusUpdate);
-            } catch (TwitterException ex) {
-                ex.printStackTrace();
-            }
+        long r1 = status.getId();
+        StatusUpdate statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " here are a list of commands: http://pastebin.com/5y1MtE6f");
+        statusUpdate.setInReplyToStatusId(r1);
+        try {
+            HorrgsTwitter.twitter.updateStatus(statusUpdate);
+        } catch (TwitterException ex) {
+            ex.printStackTrace();
         }
     }
 

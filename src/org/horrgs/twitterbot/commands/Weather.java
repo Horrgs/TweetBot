@@ -4,6 +4,7 @@ import org.horrgs.twitterbot.HorrgsTwitter;
 import org.horrgs.twitterbot.api.FileManager;
 import org.horrgs.twitterbot.api.Site;
 import org.horrgs.twitterbot.io.WeatherJSON;
+import org.horrgs.twitterbot.util.TweetTools;
 import org.json.JSONException;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -21,77 +22,91 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
     public void onCommand(Status status, String[] args) {
         StatusUpdate statusUpdate = new StatusUpdate("");
         long r1 = status.getId();
-        if(status.getUser().getScreenName().equals("Horrgs")) {
-            try {
-                if(args.length != 4) {
-                    statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + "You gave an invalid argument.\n%weather <city> <state initials> <weathertype>");
-                    statusUpdate.setInReplyToStatusId(r1);
-                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                } else {
-                    city = args[1];
-                    state = args[2];
-                    weathertype = args[3].toLowerCase();
-                    site = new Site("http://api.wunderground.com/api/" + FileManager.getInstance().getKey("weatherApiKey") + "/" + weathertype
-                            + "/q/" + state.replace(" ", "%20") + "/" + city.replace(" ", "%20") + ".json");
-                    String[] allowedWeatherTypes = {"alert", "condition", "forecast"};
-                    boolean isGood = false;
-                    for(int x = 0; x < allowedWeatherTypes.length; x++) {
-                        if(allowedWeatherTypes[x].contains(weathertype.replace("s", ""))) {
-                            isGood = true;
-                        }
-                    }
-                    if(isGood) {
-                        site.openURL(site.getURL(null));
-                        try {
-                            switch(weathertype.replace("s", "")) {
-                                case "alert":
-                                    /**
-                                     * //TODO: maybe have this instead tweet hourly, as no one is going to tweet to during
-                                     * a storm to see what the weather alerts are.
-                                     */
-                                    statusUpdate = new StatusUpdate("WEATHER ALERT\n" +
-                                            "Description: " + getDescription() + "\n" +
-                                            "Began At: " + dateSet() +  "\n" +
-                                            "Expires At: " + dateExpires());
-                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                                    break;
-                                case "condition":
-                                    statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n " +
-                                            "Temp: " + getFTemp() + "F\n" +
-                                                    "Feels Like: " + getFeelsLike() + "F\n" +
-                                                    "Forecast: " + getForecast() + "\n" +
-                                                    "Precip: " + getPrecipitation() + " inches\n" +
-                                                    "Wind: " + getWind() + "MPH\n" +
-                                                    "Wind Gusts: " + getWindGusts() + "MPH");
-                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                                    break;
-                                case "forecast":
-
-                                    statusUpdate = new StatusUpdate("[1/3]" +
-                                            "Temp: " + getAccuHighFahrenheit() + "F/" + getAccuLowFahrenheit() + "F\n" +
-                                            "Outlook: " + getAccuConditions() + "\n");
-                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                                    Thread.sleep(5000);
-                                    statusUpdate = new StatusUpdate("[2/3] " +
-                                            "Chance of Precipitation: " + getAccuPrecipPossibility() + "%\n" +
-                                            "Wind: " + getMaxWind() + "MPH max / " + getAvgWind() + "MPH avg\n");
-                                    Thread.sleep(5000);
-                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                                    statusUpdate = new StatusUpdate("[3/3] " +
-                                            "Humidity: " + getAvgHumidity() + "%");
-                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                                    break;
-                            }
-                        } catch (JSONException ex) {
-                            ex.printStackTrace();
-                        } catch(InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
+        try {
+            if (args.length != 4) {
+                statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + "You gave an invalid argument.\n%weather <city> <state initials> <weathertype>");
+                statusUpdate.setInReplyToStatusId(r1);
+                HorrgsTwitter.twitter.updateStatus(statusUpdate);
+            } else {
+                city = args[1];
+                state = args[2];
+                weathertype = args[3].toLowerCase();
+                site = new Site("http://api.wunderground.com/api/" + FileManager.getInstance().getKey("weatherApiKey") + "/" + weathertype
+                        + "/q/" + state.replace(" ", "%20") + "/" + city.replace(" ", "%20") + ".json");
+                String[] allowedWeatherTypes = {"alert", "condition", "forecast"};
+                boolean isGood = false;
+                for (int x = 0; x < allowedWeatherTypes.length; x++) {
+                    if (allowedWeatherTypes[x].contains(weathertype.replace("s", ""))) {
+                        isGood = true;
                     }
                 }
-            } catch (TwitterException ex) {
-                ex.printStackTrace();
+                if (isGood) {
+                    site.openURL(site.getURL(null));
+                    try {
+                        switch (weathertype.replace("s", "")) {
+                            case "alert":
+                                String tweet = "WEATHER ALERT\n" + "Description: " + getDescription() + "\nBegan At: " + dateSet() + "\nExpires At: " + dateExpires();
+                                boolean split = tweet.length() >= 130;
+                                if (split) {
+                                    String[] tweets = TweetTools.splitTweet(tweet);
+                                    for (int x = 0; x < tweets.length; x++) {
+                                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n" + tweets[x]);
+                                        statusUpdate.setInReplyToStatusId(r1);
+                                        HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                        Thread.sleep(5000);
+                                    }
+                                } else {
+                                    statusUpdate = new StatusUpdate(tweet);
+                                    statusUpdate.setInReplyToStatusId(r1);
+                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                }
+                                break;
+                            case "condition":
+                                tweet = "Temp: " + getFTemp() + "F\nFeels Like: " + getFeelsLike() + "F\nForecast: " + getForecast() + "\nPrecipitation: " + getPrecipitation() + " inches\nWind: " +
+                                        getWind() + "MPH\nWind Gusts: " + getWindGusts() + "MPH";
+                                split = tweet.length() >= 130;
+                                if (split) {
+                                    String[] tweets = TweetTools.splitTweet(tweet);
+                                    for (int x = 0; x < tweets.length; x++) {
+                                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n" + tweets[x]);
+                                        statusUpdate.setInReplyToStatusId(r1);
+                                        HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                        Thread.sleep(5000);
+                                    }
+                                } else {
+                                    statusUpdate = new StatusUpdate(tweet);
+                                    statusUpdate.setInReplyToStatusId(r1);
+                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                }
+                                break;
+                            case "forecast":
+                                tweet = "Temp: " + getAccuHighFahrenheit() + "F/" + getAccuLowFahrenheit() + "F\nOutlook: " + getAccuConditions() + "\nChance of Precip.: " + getAccuPrecipPossibility() + "%\n" +
+                                        "Wind: " + getMaxWind() + " MPH max/ " + getAvgWind() + " MPH avg\nHumidity: " + getAvgHumidity() + "%";
+                                split = tweet.length() >= 130;
+                                if (split) {
+                                    String[] tweets = TweetTools.splitTweet(tweet);
+                                    for (int x = 0; x < tweets.length; x++) {
+                                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n" + tweets[x]);
+                                        statusUpdate.setInReplyToStatusId(r1);
+                                        HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                        Thread.sleep(5000);
+                                    }
+                                } else {
+                                    statusUpdate = new StatusUpdate(tweet);
+                                    statusUpdate.setInReplyToStatusId(r1);
+                                    HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                                }
+                                break;
+                        }
+                    } catch (JSONException ex) {
+                        ex.printStackTrace();
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
+        } catch (TwitterException ex) {
+            ex.printStackTrace();
         }
     }
 
