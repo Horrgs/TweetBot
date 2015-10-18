@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.json.JSONObject;
 
-import java.io.FileReader;
+import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -52,7 +52,7 @@ public class TweetTools {
         JsonObject jsonObject = null;
         JsonParser jsonParser = new JsonParser();
         try {
-            Object obj = jsonParser.parse(new FileReader("keys.json"));
+            Object obj = jsonParser.parse(new FileReader("permissions.json"));
             jsonObject = (JsonObject) obj;
             System.out.println("Parsing secrets.json ....");
         } catch (Exception ex) {
