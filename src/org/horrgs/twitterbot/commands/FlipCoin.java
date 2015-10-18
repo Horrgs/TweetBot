@@ -17,13 +17,10 @@ public class FlipCoin implements SubCommand {
         try {
             long r1 = status.getId();
             StatusUpdate statusUpdate = new StatusUpdate("");
-            System.out.println(args.length);
-            System.out.println(args[1]);
             if (args.length == 2) {
                 if (args[1].equals("2/3") || args[1].equals("3/5")) {
                     Random random = new Random(2);
                     String flips[] = new String[args[1].length()];
-                    System.out.println(args[1].length());
                     for (int x = 0; x < Integer.parseInt(String.valueOf(args[1].length())); x++) {
                         int i = random.nextInt();
                         flips[x] = i == 0 ? "Heads" : "Tails";

@@ -12,8 +12,6 @@ import java.util.HashMap;
  * Created by horrg on 9/19/2015.
  */
 public class CommandHandler implements SubCommand {
-    /*private static CommandHandler instance = new CommandHandler();
-    public static CommandHandler getInstance() { return instance; }*/
     public HashMap<String, SubCommand> commands;
 
     public CommandHandler() {
@@ -49,6 +47,7 @@ public class CommandHandler implements SubCommand {
                             SubCommand subCommand = commands.get(cmd);
                             if(TweetTools.hasPermission(status.getUser().getId(), subCommand.getPermission())) {
                                 subCommand.onCommand(status, args);
+                            } else {
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
