@@ -38,15 +38,12 @@ public class FileManager {
 
     public void createFiles() {
         keys = new File("keys.json");
-        System.out.println("#1");
         if (!keys.exists()) {
-            System.out.println("#2");
             try {
-                System.out.println("#3");
                 keys.createNewFile();
                 keysWriter = new BufferedWriter(new FileWriter(keys));
                 keysReader = new BufferedReader(new FileReader(keys));
-                KeysLayout keysLayout = new KeysLayout("", "", "", "", "", "");
+                KeysLayout keysLayout = new KeysLayout("", "", "", "", "", "", "", "");
                 Gson gson = new Gson();
                 JSONObject jsonObject = new JSONObject(gson.toJson(keysLayout));
                 keysWriter.write(jsonObject.toString());
@@ -69,7 +66,6 @@ public class FileManager {
                 ex.printStackTrace();
             }
             KeysLayout keysLayout = gson.fromJson(jsonObject, KeysLayout.class);
-            System.out.println(keysLayout.getoAuthAccessToken());
         }
     }
 
@@ -90,15 +86,17 @@ public class FileManager {
 
 
         String oAuthConsumerKey, oAuthConsumerSecret,
-                oAuthAccessToken, oAuthAccessTokenSecret, weatherApiKey, pasteBinKey;
-        public KeysLayout(String oAuthConsumerKey,
-                          String oAuthConsumerSecret, String oAuthAccessToken, String oAuthAccessTokenSecret, String weatherApiKey, String pasteBinKey) {
+                oAuthAccessToken, oAuthAccessTokenSecret, weatherApiKey, pasteBinKey, bitlyApiUsername, bitlyApiKey;
+        public KeysLayout(String oAuthConsumerKey, String oAuthConsumerSecret, String oAuthAccessToken, String oAuthAccessTokenSecret,
+                          String weatherApiKey, String pasteBinKey, String bitlyApiUsername, String bitlyApiKey) {
             this.oAuthConsumerKey = oAuthConsumerKey;
             this.oAuthConsumerSecret = oAuthConsumerSecret;
             this.oAuthAccessToken = oAuthAccessToken;
             this.oAuthAccessTokenSecret = oAuthAccessTokenSecret;
             this.weatherApiKey = weatherApiKey;
             this.pasteBinKey = pasteBinKey;
+            this.bitlyApiUsername = bitlyApiUsername;
+            this.bitlyApiKey = bitlyApiKey;
         }
 
         public String getWeatherApiKey() {
@@ -123,6 +121,14 @@ public class FileManager {
 
         public String getPasteBinKey() {
             return pasteBinKey;
+        }
+
+        public String getBitlyApiUsername() {
+            return bitlyApiUsername;
+        }
+
+        public String getBitlyApiKey() {
+            return bitlyApiKey;
         }
     }
 
