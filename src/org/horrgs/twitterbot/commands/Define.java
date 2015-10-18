@@ -14,9 +14,11 @@ public class Define implements SubCommand {
     @Override
     public void onCommand(Status status, String[] args) {
         try {
+            System.out.println("1");
             StatusUpdate statusUpdate = new StatusUpdate("");
             long r1 = statusUpdate.getInReplyToStatusId();
-            if (args.length > 1) {
+            if (args.length > 2) {
+                System.out.println("2");
                 String define = "";
                 for (int x = 0; x < args.length; x++) {
                     define = "" + args[x];
@@ -26,26 +28,29 @@ public class Define implements SubCommand {
                 String def = words.defineWord(define);
                 boolean split = def.length() >= 130;
                 if (split) {
+                    System.out.println("3");
                     String[] tweets = TweetTools.splitTweet(def);
                     for (int x = 0; x < tweets.length; x++) {
-                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n" + tweets[x]);
+                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " \n" + tweets[x]);
                         statusUpdate.setInReplyToStatusId(r1);
                         HorrgsTwitter.twitter.updateStatus(statusUpdate);
                         Thread.sleep(5000);
                     }
                 } else {
+                    System.out.println("4");
                     statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + def);
                     statusUpdate.setInReplyToStatusId(r1);
                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
                 }
-            } else if (args.length == 1) {
+            } else if (args.length == 2) {
+                System.out.println("4");
                 Words words = new Words();
                 String def = words.defineWord(args[1]);
                 boolean split = def.length() >= 130;
                 if (split) {
                     String[] tweets = TweetTools.splitTweet(def);
                     for (int x = 0; x < tweets.length; x++) {
-                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n" + tweets[x]);
+                        statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " \n" + tweets[x]);
                         statusUpdate.setInReplyToStatusId(r1);
                         HorrgsTwitter.twitter.updateStatus(statusUpdate);
                         Thread.sleep(5000);
