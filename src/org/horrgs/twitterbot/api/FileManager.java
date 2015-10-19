@@ -55,7 +55,6 @@ public class FileManager {
                 ex.printStackTrace();
             }
         } else {
-            System.out.println("#3000");
             Gson gson = new Gson();
             JsonObject jsonObject = null;
             JsonParser jsonParser = new JsonParser();

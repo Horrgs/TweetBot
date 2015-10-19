@@ -46,7 +46,6 @@ public class News implements SubCommand, NewsJSON {
                             //Url url = Bitly.as(FileManager.getInstance().getKey("bitlyApiUsername"), FileManager.getInstance().getKey("bitlyApiKey")).call(Bitly.shorten(newsJSON[x].getStringURL(x)));
                             statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " " + newsJSON[x].getTitle(x) + " " + url);
                             statusUpdate.setInReplyToStatusId(r1);
-                            System.out.println(newsJSON[x].getTitle(x));
                             HorrgsTwitter.twitter.updateStatus(statusUpdate);
                             Thread.sleep(3000);
                         } catch (InterruptedException ex) {

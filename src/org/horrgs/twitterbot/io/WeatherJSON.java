@@ -17,9 +17,9 @@ public interface WeatherJSON {
         public double getFTemp()throws JSONException;
         public double getWind()throws JSONException;
         public String getHumidity()throws JSONException;
-        public double getFeelsLike()throws JSONException;
+        public String getFeelsLike()throws JSONException;
         public String getForecast()throws JSONException;
-        public double getWindGusts()throws JSONException;
+        public int getWindGusts()throws JSONException;
         public String getPrecipitation()throws JSONException;
     }
 
