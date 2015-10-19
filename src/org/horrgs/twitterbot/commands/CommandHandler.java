@@ -25,39 +25,38 @@ public class CommandHandler implements SubCommand {
         commands.put("flipcoin", new FlipCoin());
         commands.put("help", new Help());
         commands.put("news", new News());
+        commands.put("perm", new Permission());
         commands.put("thingstheysay", new ThingsTheySay());
         commands.put("weather", new Weather());
     }
 
     @Override
     public void onCommand(Status status, String[] args) {
-        if(status.getUser().getScreenName().equals("Horrgs")) {
-            if(status.getText().startsWith("%")) {
-                String[] strings = status.getText().split(" ");
-                args = strings;
-                String cmd = args[0].replace("%", "");
-                System.out.println(cmd);
+        String[] strings = status.getText().split(" ");
+        args = strings;
+        String cmd = args[0].replace("%", "");
+        System.out.println(cmd);
+        try {
+            if (!commands.containsKey(cmd)) {
+                StatusUpdate statusUpdate = new StatusUpdate("Command \"" + cmd + "\" doesn't exist.");
+                HorrgsTwitter.twitter.updateStatus(statusUpdate);
+                return;
+            } else {
                 try {
-                    if(!commands.containsKey(cmd)) {
-                        StatusUpdate statusUpdate = new StatusUpdate("Command \"" + cmd + "\" doesn't exist.");
-                        HorrgsTwitter.twitter.updateStatus(statusUpdate);
-                        return;
+                    SubCommand subCommand = commands.get(cmd);
+                    if (TweetTools.hasPermission(status.getUser().getId(), subCommand.getPermission())) {
+                        subCommand.onCommand(status, args);
+                        TweetTools tweetTools = new TweetTools();
+                        tweetTools.addRespondedToTweet(status.getId());
                     } else {
-                        try {
-                            SubCommand subCommand = commands.get(cmd);
-                            if(TweetTools.hasPermission(status.getUser().getId(), subCommand.getPermission())) {
-                                subCommand.onCommand(status, args);
-                            } else {
-                            }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
                     }
-                } catch (TwitterException ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+
             }
+        } catch (TwitterException ex) {
+            ex.printStackTrace();
         }
     }
 

@@ -1,7 +1,6 @@
 package org.horrgs.twitterbot.util;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -54,17 +53,75 @@ public class TweetTools {
         try {
             Object obj = jsonParser.parse(new FileReader("permissions.json"));
             jsonObject = (JsonObject) obj;
-            System.out.println("Parsing secrets.json ....");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         if(jsonObject != null && jsonObject.get(permission) != null) {
             for(int x = 0; x < jsonObject.get(permission).getAsJsonArray().size(); x++) {
-                if(jsonObject.get(permission).getAsJsonArray().get(x).getAsLong() == longId) {
+                if(jsonObject.get(permission).getAsJsonArray().get(x).getAsJsonObject().get("id").getAsLong() == longId) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public void addRespondedToTweet(long tweetId) {
+        JsonArray jsonArray = null;
+        JsonParser jsonParser = new JsonParser();
+        try {
+            Object obj = jsonParser.parse(new FileReader("tweets.json"));
+            jsonArray = (JsonArray) obj;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        TweetFormat tweetFormat = new TweetFormat(tweetId);
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.toJsonTree(tweetFormat);
+        try {
+            if(jsonArray != null) {
+                jsonArray.add(jsonElement);
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("tweets.json"));
+                bufferedWriter.write(jsonArray.toString());
+                bufferedWriter.flush();
+                bufferedWriter.close();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public boolean hasRespondedToTweet(long tweetId) {
+        JsonArray jsonArray = null;
+        JsonParser jsonParser = new JsonParser();
+        try {
+            Object obj = jsonParser.parse(new FileReader("tweets.json"));
+            jsonArray = (JsonArray) obj;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if(jsonArray != null) {
+            for(int x = 0; x < jsonArray.size(); x++) {
+                if(jsonArray.get(x).getAsJsonObject().get("id").getAsLong() == tweetId) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public class TweetFormat {
+        private long id;
+        public TweetFormat(long id) {
+            this.id = id;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
     }
 }

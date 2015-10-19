@@ -37,6 +37,8 @@ import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.FileReader;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -50,10 +52,16 @@ public class HorrgsTwitter implements Runnable {
     public static void main(String[] args) {
         fileManager.createFiles();
         new CommandHandler();
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        scheduledExecutorService.scheduleAtFixedRate(new TweetListener(), 5, 15, TimeUnit.SECONDS);
+        ScheduledExecutorService twitterListener = Executors.newScheduledThreadPool(1);
+        twitterListener.scheduleAtFixedRate(new TweetListener(), 5, 60, TimeUnit.SECONDS);
         Thread thread = new Thread(new HorrgsTwitter());
         thread.start();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int delay = 60 - calendar.get(Calendar.MINUTE);
+        ScheduledExecutorService wordOfTheDay = Executors.newScheduledThreadPool(1);
+        wordOfTheDay.scheduleWithFixedDelay(new TweetListener(), delay, 60, TimeUnit.MINUTES);
     }
 
     @Override
@@ -63,7 +71,6 @@ public class HorrgsTwitter implements Runnable {
         try {
             Object obj = jsonParser.parse(new FileReader("keys.json"));
             jsonObject = (JsonObject) obj;
-            System.out.println("Parsing secrets.json ....");
         } catch (Exception ex) {
             ex.printStackTrace();
             return;

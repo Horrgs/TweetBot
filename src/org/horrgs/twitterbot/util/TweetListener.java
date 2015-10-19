@@ -2,10 +2,8 @@ package org.horrgs.twitterbot.util;
 
 import org.horrgs.twitterbot.HorrgsTwitter;
 import org.horrgs.twitterbot.commands.CommandHandler;
-import twitter4j.DirectMessage;
-import twitter4j.Status;
-import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
+import twitter4j.Status;
 
 /**
  * Created by Horrgs on 10/16/2015.
@@ -16,16 +14,13 @@ public class TweetListener implements Runnable {
     public void run() {
         try {
             for(Status status : HorrgsTwitter.twitter.getHomeTimeline()) {
+                TweetTools tweetTools = new TweetTools();
                 if(status.getText().startsWith("%")) {
-                    new CommandHandler().onCommand(status, null);
-                    System.out.println(status.getUser().getId());
+                    if (!tweetTools.hasRespondedToTweet(status.getId())) {
+                        new CommandHandler().onCommand(status, null);
+                    }
                 }
             }
-           /* for(DirectMessage directMessage : HorrgsTwitter.twitter.getDirectMessages()) {
-                if(TweetTools.hasPermission(directMessage.getSenderId(), "tweetbot.admin.permission")) {
-                    //new CommandHandler().onCommand();
-                }
-            }  */
         } catch (TwitterException ex) {
             ex.printStackTrace();
         }
