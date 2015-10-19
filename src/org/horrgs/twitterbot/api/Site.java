@@ -34,9 +34,12 @@ public class Site {
             urlConnection.setUseCaches(false);
             urlConnection.setDefaultUseCaches(false);
             System.out.println("Connection has been established to: " + url);
+            this.jsonObject = new JSONObject(getResponse(urlConnection));
             this.urlConnection = urlConnection;
             return urlConnection;
         } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (JSONException ex) {
             ex.printStackTrace();
         }
         return null;

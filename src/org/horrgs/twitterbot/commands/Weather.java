@@ -43,6 +43,7 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                 if (isGood) {
                     site.openURL(site.getURL(null));
                     try {
+                        Thread.sleep(3000);
                         switch (weathertype.replace("s", "")) {
                             case "alert":
                                 String tweet = "WEATHER ALERT\n" + "Description: " + getDescription() + "\nBegan At: " + dateSet() + "\nExpires At: " + dateExpires();
@@ -56,7 +57,7 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                                         Thread.sleep(5000);
                                     }
                                 } else {
-                                    statusUpdate = new StatusUpdate(tweet);
+                                    statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n" + tweet);
                                     statusUpdate.setInReplyToStatusId(r1);
                                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
                                 }
@@ -74,7 +75,7 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                                         Thread.sleep(5000);
                                     }
                                 } else {
-                                    statusUpdate = new StatusUpdate(tweet);
+                                    statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n" + tweet);
                                     statusUpdate.setInReplyToStatusId(r1);
                                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
                                 }
@@ -92,7 +93,7 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
                                         Thread.sleep(5000);
                                     }
                                 } else {
-                                    statusUpdate = new StatusUpdate(tweet);
+                                    statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + "\n" + tweet);
                                     statusUpdate.setInReplyToStatusId(r1);
                                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
                                 }
@@ -159,7 +160,7 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
     }
 
     @Override
-    public double getFeelsLike() throws JSONException {
+    public String getFeelsLike() throws JSONException {
         /*
         Please refer to https://github.com/Horrgs/WeatherTweets/blob/master/src/org/horrgs/weathertweets/wunderground/WGLookup.java#L141
         if error.
@@ -173,7 +174,7 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
     }
 
     @Override
-    public double getWindGusts() throws JSONException {
+    public int getWindGusts() throws JSONException {
         //Please refer to https://github.com/Horrgs/WeatherTweets/blob/master/src/org/horrgs/weathertweets/wunderground/WGLookup.java#L131
         //if error.
         return site.get(site.getJsonObject().getJSONObject("current_observation"), "wind_gust_mph");
@@ -181,7 +182,7 @@ public class Weather implements SubCommand, WeatherJSON.Alerts, WeatherJSON.Cond
 
     @Override
     public String getPrecipitation() throws JSONException {
-        return site.get(site.getJsonObject().getJSONObject("current_observation"), "precip_1hr_in");
+        return site.get(site.getJsonObject().getJSONObject("current_observation"), "precip_today_in");
     }
 
     /*

@@ -24,8 +24,10 @@ public class Help implements SubCommand {
             }
         } else if(args.length == 2) {
             String command = args[1];
+            char c = Character.toUpperCase(args[1].charAt(0));
+            command = command.replace(command.charAt(0), c);
             try {
-                Class<?> myClass = Class.forName("org.horrgs.twiterbot.commands." + command);
+                Class<?> myClass = Class.forName("org.horrgs.twitterbot.commands." + command);
                 Object a = myClass.newInstance();
                 if (a instanceof SubCommand) {
                     SubCommand subCommand = (SubCommand ) a;

@@ -21,7 +21,7 @@ public class Permission implements SubCommand {
         long r1 = status.getId();
         try {
             if(args.length == 4) {
-                String aor = args[1], perm = args[2], user = args[3];
+                String aor = args[1], perm = args[2].replace("!", "."), user = args[3];
                 //command - add/remove - permission - user.
                 Gson gson = new Gson();
                 JsonObject jsonObject = null;
@@ -35,11 +35,13 @@ public class Permission implements SubCommand {
                 int lineNumber = 0;
                 boolean alreadyHas = false;
                 User user1 = HorrgsTwitter.twitter.showUser(user);
-                for(int x = 0; x < jsonObject.get(perm).getAsJsonArray().size(); x++) {
-                    if(jsonObject.get(perm).getAsJsonArray().get(x).equals(String.valueOf(user1.getId()))) {
-                        lineNumber = x;
-                        alreadyHas = true;
-                        break;
+                if(jsonObject != null && jsonObject.get(perm) != null) {
+                    for(int x = 0; x < jsonObject.get(perm).getAsJsonArray().size(); x++) {
+                        if(jsonObject.get(perm).getAsJsonArray().get(x).equals(String.valueOf(user1.getId()))) {
+                            lineNumber = x;
+                            alreadyHas = true;
+                            break;
+                        }
                     }
                 }
                 long idToAdd = HorrgsTwitter.twitter.showUser(user).getId();
@@ -58,7 +60,7 @@ public class Permission implements SubCommand {
                     bufferedWriter.flush();
                     bufferedWriter.close();
                     statusUpdate = new StatusUpdate("@" + status.getUser().getScreenName() + " Successfully added permission \"" +
-                            perm + "\" from @" + user1.getScreenName());
+                            perm + "\" to @" + user1.getScreenName());
                     statusUpdate.setInReplyToStatusId(r1);
                     HorrgsTwitter.twitter.updateStatus(statusUpdate);
                 } else if(aor.equals("remove")) {
